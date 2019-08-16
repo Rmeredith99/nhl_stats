@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <link rel="stylesheet" href="../../static/style.css" type="text/css">
+
+        <style type="text/css">
+            body { background: rgb(220, 220, 220) !important; } /* Adding !important forces the browser to overwrite the default style applied by Bootstrap */
+            .color1 {color: rgb(227,114,34)}
+            .color2 {color: rgb(7,136,155)}
+            .color3 {color: rgb(102,185,191)}
+        </style>
+
+        <title>
+        {% block title %}
+        {% endblock %}
+        </title>
+
+    </head>
+
+    <body class="">
+
+        <!-- The banner at the top of the page -->
+        <div class="banner">
+            <h1 class="vertical-center">Banner Text</h1>
+        </div>
+
+        {% block content %}
+        {% endblock %}
+
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    
+    </body>
+</html>
