@@ -6,4 +6,9 @@ NHL Stats
 
 {% block content %}
 <p>This is where content will go for stats</p>
+
+{% for stat in stat_lines %}
+    <div>{{stat.playerFirstName}} {{stat.playerLastName}}, Goals: {{stat.goals}}</div>
+{% endfor %}
+
 {% endblock %}
