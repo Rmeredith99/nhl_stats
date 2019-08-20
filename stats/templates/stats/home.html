@@ -1,14 +1,34 @@
 {% extends 'stats/base.html' %}
+{% load django_tables2 %}
 
 {% block title %}
 NHL Stats
 {% endblock %}
 
 {% block content %}
-<p>This is where content will go for stats</p>
 
-{% for stat in stat_lines %}
-    <div>{{stat.playerFirstName}} {{stat.playerLastName}}, Goals: {{stat.goals}}</div>
-{% endfor %}
+<div class="m-3">
+
+    <form name='submit' action="{{request.get_full_path}}" method='POST'>
+        {% csrf_token %}
+
+        <div class="form-group">
+            <h5 class="color1">Enter filter here</h5>
+            <textarea type='text' name="filter_string" placeholder="gamesPlayed > 20&#13;&#10;year = 20182019" class="form-control" style= "height: 200px"></textarea>
+        </div>
+
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary" name="current_url" value="{{request.get_full_path}}">Filter</button>
+        </div>
+    </form>
+
+    <div>
+        <a href="/stats/" class="btn btn-primary">Reset</a>
+    </div>
+
+    <br>
+
+    {% render_table table %}
+</div>
 
 {% endblock %}
