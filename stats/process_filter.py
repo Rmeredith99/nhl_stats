@@ -99,9 +99,18 @@ def url_string_to_queryset(url_string):
     # deals with filters
     if "?filter=" in url_string:
         filter_start = url_string.index("?filter=")
-        if "&sort=" in url_string:
-            filter_end = url_string.index("&sort=")
-            filter_string = url_string[filter_start + 8:filter_end]
+        filter_end = []
+        if "=&sort=" in url_string:
+            filter_end.append(url_string.index("=&sort="))
+        elif "&sort=" in url_string:
+            filter_end.append(url_string.index("&sort="))
+        if "=&page=" in url_string:
+            filter_end.append(url_string.index("=&page="))
+        elif "&page=" in url_string:
+            filter_end.append(url_string.index("&page="))
+            
+        if len(filter_end) > 0:
+            filter_string = url_string[filter_start + 8:min(filter_end)]
         else:
             filter_string = url_string[filter_start + 8:]
     else:
@@ -110,20 +119,20 @@ def url_string_to_queryset(url_string):
     # separating various filters and iterating over them
     filters = filter_string.split("&")
     objects = StatLine.objects.all()
-    print(len(objects))
-    relation_map = {"lte": "lte", "gte": "gte", "lt": "lt", "gt": "gt", "=": "exact"}
+    relation_map = {"lte": "lte", "gte": "gte", "lt": "lt", "gt": "gt", "eq": "exact"}
     for f in filters:
         name, relation, value = f.split("%2C")
         # hard-coded check for specific values that have unique filtering
         if name == "playerTeamsPlayedFor":
             objects = objects.filter(playerTeamsPlayedFor__icontains = value)
         else:
+            exec_dict = {"objects": objects}
             try:
                 # if value is numeric then we don't need to apply extra quotation marks
                 _ = float(value)
                 code_string = "objects = objects.filter(" + name + "__" + relation_map[relation] + " = " + value + ")"
-                print(code_string)
-                exec(code_string)
+                exec(code_string, exec_dict)
+                objects = exec_dict["objects"]
             except:
                 # if the string contains a bool then we don't need to apply extra quotation marks
                 if value == "True" or value == "False":
@@ -135,7 +144,77 @@ def url_string_to_queryset(url_string):
                     code_string = "objects = objects.filter(" + name + "__" + relation_map[relation] + " = '" + str(value) + "')"
                     exec(code_string)
 
-    print(len(objects))
     return objects
             
+def remove_filter(url_string):
+    """
+    [remove_filter] takes a url and removes the parts pertaining
+        to filters. This will also remove the page number since
+        that would no longer be relevant. Returns a new url.
+    """
+    sort_start = -1
+    page_start = -1
+    start_offset = 0
+    if "=&sort=" in url_string:
+        index = url_string.index("=&sort=")
+        sort_start = index
+        start_offset = 2
+    elif "&sort=" in url_string:
+        index = url_string.index("&sort=")
+        sort_start = index
+        start_offset = 1
+    elif "sort=" in url_string:
+        index = url_string.index("sort=")
+        sort_start = index
+        start_offset = 0
+    if "=&page=" in url_string:
+        index = url_string.index("=&page=")
+        page_start = index
+    elif "&page=" in url_string:
+        index = url_string.index("&page=")
+        page_start = index
+            
+    if sort_start == -1:
+        return "/stats/"
+    elif page_start == -1:
+        return "/stats/?" + url_string[sort_start + start_offset:]
+    elif page_start < sort_start:
+        return "/stats/?" + url_string[sort_start + start_offset:]
+    else: # page_start > sort_start
+        return "/stats/?" + url_string[sort_start + start_offset:page_start]
 
+def remove_sort(url_string):
+    """
+    [remove_sort] takes a url and removes the parts pertaining
+        to sorting. This will also remove the page number since
+        that would no longer be relevant. Returns a new url.
+    """
+    sort_start = -1
+    page_start = -1
+    if "=&sort=" in url_string:
+        index = url_string.index("=&sort=")
+        sort_start = index
+    elif "&sort=" in url_string:
+        index = url_string.index("&sort=")
+        sort_start = index
+    elif "?sort=" in url_string:
+        index = url_string.index("?sort=")
+        sort_start = index
+    if "=&page=" in url_string:
+        index = url_string.index("=&page=")
+        page_start = index
+    elif "&page=" in url_string:
+        index = url_string.index("&page=")
+        page_start = index
+    elif "?page=" in url_string:
+        index = url_string.index("?page=")
+        page_start = index
+
+    if max(sort_start, page_start) == -1:
+        return url_string
+    elif sort_start == -1:
+        return url_string[:page_start]
+    elif page_start == -1:
+        return url_string[:sort_start]
+    else: # sort and page both appear
+        return url_string[:min(sort_start, page_start)]

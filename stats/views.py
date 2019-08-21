@@ -3,9 +3,10 @@ from __future__ import unicode_literals
 
 from django.shortcuts import render, redirect
 from django_tables2 import RequestConfig
+from django.http import HttpResponse
 
 from stats.data_scraper import update_data
-from stats.process_filter import filter_text_to_url, update_url, url_string_to_queryset
+from stats.process_filter import filter_text_to_url, update_url, url_string_to_queryset, remove_filter, remove_sort
 from stats.models import StatLine
 from stats.tables import StatLineTable
 from stats.filters import StatLineFilter
@@ -37,11 +38,33 @@ def home(request):
         filter_form = FilterForm()
 
     # update_data("20182019", False)
-    # objects = StatLine.objects.all()
     objects = url_string_to_queryset(request.get_full_path())
-    #objects = objects.filter(points__lt = 100)
     table = StatLineTable(objects)
     RequestConfig(request).configure(table)
     table.paginate(page=request.GET.get('page', 1), per_page=15)
 
     return render(request, 'stats/home.html', {"stat_lines": objects, "table": table})
+
+def metric_submit(request):
+    """
+    [metric_submit] 
+    """
+    pass
+
+def remove_filter_submit(request):
+    """
+    [remove_filter_submit] takes in a url and removes all parts that
+        deal with filters. Returns a new url to redirect to.
+    """
+    current_url = request.POST.get("current_url")
+    new_url = remove_filter(current_url)
+    return redirect(new_url)
+
+def remove_sort_submit(request):
+    """
+    [remove_sort_submit] takes in a url and removes all parts that
+        deal with sorting. Returns a new url to redirect to.
+    """
+    current_url = request.POST.get("current_url")
+    new_url = remove_sort(current_url)
+    return redirect(new_url)

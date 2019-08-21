@@ -13,22 +13,41 @@ NHL Stats
         {% csrf_token %}
 
         <div class="form-group">
-            <h5 class="color1">Enter filter here</h5>
+            <h5 class="">Enter filter here</h5>
             <textarea type='text' name="filter_string" placeholder="gamesPlayed > 20&#13;&#10;year = 20182019" class="form-control" style= "height: 200px"></textarea>
         </div>
 
         <div class="form-group">
-            <button type="submit" class="btn btn-primary" name="current_url" value="{{request.get_full_path}}">Filter</button>
+            <button type="submit" class="btn btn-primary" name="current_url" value="{{request.get_full_path}}">Apply Filter</button>
         </div>
     </form>
 
-    <div>
-        <a href="/stats/" class="btn btn-primary">Reset</a>
+    <div class="row">
+        <form name='remove_filter' action="remove_filter/" method='POST' class="form-group">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary col-10 m-3" name="current_url" value="{{request.get_full_path}}">Reset Filter</button>
+        </form>
+
+        <form name='remove_sort' action="remove_sort/" method='POST' class="form-group">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary col-10 m-3" name="current_url" value="{{request.get_full_path}}">Reset Sort</button>
+        </form>
+
+        <div class="form-group">
+            <a href="/stats/" class="btn btn-primary col-8 m-3">Reset</a>
+        </div>
     </div>
 
-    <br>
-
     {% render_table table %}
+
+    <form name="submit" action="{{request.get_full_path}}" method="POST">
+        {% csrf_token %}
+
+        <textarea type='text' name="filter_string" placeholder="" class="form-control" style= "height: 200px"></textarea>
+
+        <button type="submit" class="btn btn-primary" name="current_url" value="{{request.get_full_path}}">Create Metric</button>
+    </form>
+
 </div>
 
 {% endblock %}
