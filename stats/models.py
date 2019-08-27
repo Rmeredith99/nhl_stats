@@ -192,3 +192,23 @@ class StatLine(models.Model):
 
 	class Meta:
 		db_table = "StatLine"
+
+#######################################################
+# Start of code dealing with custom metrics
+
+class CustomMetric(models.Model):
+	string = models.CharField(max_length=200)
+	label = models.CharField(max_length=200)
+	username = models.CharField(max_length=200, default="")
+
+	class Meta:
+		db_table = "CustomMetric"
+
+class CustomStat(models.Model):
+	player = models.ForeignKey(StatLine, on_delete=models.CASCADE)
+	value = models.FloatField(null=True)
+	metric = models.ForeignKey(CustomMetric, on_delete=models.CASCADE)
+
+	class Meta:
+		db_table = "CustomStat"
+

@@ -87,18 +87,32 @@ def filter_text_to_url(filter_text):
 
     return "".join(url).strip("&")
 
-
+def filter_details_to_string(name, relation, value):
+    """
+    [filter_details_to_string] takes in the raw details of a filter query,
+        the name, the relation, and the value and returns a string to be
+        displayed in the filter text box.
+    [name]: string
+    [relation]: string
+    [value]: string
+    Returns: String
+    """
+    relation_map = {"gte": " >= ", "gt": " > ", "lte": " <= ", "lt": " < ", "eq": " = "}
+    return name + relation_map[relation] + value + "\r\n"
 
 def url_string_to_queryset(url_string):
     """
     [url_string_to_queryset] takes in the url string submitted to
         stats and applies the formatted queries on a new instance
-        of StatLine.objects.all() which is then returned.
+        of StatLine.objects.all() which is then returned with a 
+        string that will be placed in the filter text box
+    [url_string]: String
+    Returns: tuple(string, string)
     """
     # defining filter_string to be just the part of the url that 
     # deals with filters
     if "?filter=" in url_string:
-        filter_start = url_string.index("?filter=")
+        filter_start = url_string.index("?filter=") + 8
         filter_end = []
         if "=&sort=" in url_string:
             filter_end.append(url_string.index("=&sort="))
@@ -110,18 +124,23 @@ def url_string_to_queryset(url_string):
             filter_end.append(url_string.index("&page="))
             
         if len(filter_end) > 0:
-            filter_string = url_string[filter_start + 8:min(filter_end)]
+            filter_string = url_string[filter_start:min(filter_end)]
         else:
-            filter_string = url_string[filter_start + 8:]
+            filter_string = url_string[filter_start:]
     else:
-        return StatLine.objects.all()
+        return StatLine.objects.all(), ""
 
     # separating various filters and iterating over them
     filters = filter_string.split("&")
     objects = StatLine.objects.all()
     relation_map = {"lte": "lte", "gte": "gte", "lt": "lt", "gt": "gt", "eq": "exact"}
+    filter_box = ""
     for f in filters:
         name, relation, value = f.split("%2C")
+        # strips '=' to account for changes in url due to the external table code
+        name = name.strip("=")
+        value = value.strip("=")
+        filter_box += filter_details_to_string(name, relation, value)
         # hard-coded check for specific values that have unique filtering
         if name == "playerTeamsPlayedFor":
             objects = objects.filter(playerTeamsPlayedFor__icontains = value)
@@ -144,7 +163,7 @@ def url_string_to_queryset(url_string):
                     code_string = "objects = objects.filter(" + name + "__" + relation_map[relation] + " = '" + str(value) + "')"
                     exec(code_string)
 
-    return objects
+    return objects, filter_box
             
 def remove_filter(url_string):
     """
@@ -218,3 +237,26 @@ def remove_sort(url_string):
         return url_string[:sort_start]
     else: # sort and page both appear
         return url_string[:min(sort_start, page_start)]
+
+def get_page_number(url_string):
+    """
+    [get_page_number] accesses the page attribute in url and returns
+        an int.
+    [url_string]: string
+    Returns: int
+    """
+    if "page=" in url_string:
+        start_index = url_string.index("page=") + 5
+        rest_of_string = url_string[start_index:]
+        if '=&' in rest_of_string:
+            end_index = rest_of_string.index("=&")
+        elif "&" in rest_of_string:
+            end_index = rest_of_string.index("&")
+        else:
+            end_index = len(rest_of_string)
+        value = rest_of_string[:end_index]
+        return int(value)
+    else:
+        return 1
+
+    

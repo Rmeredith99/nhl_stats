@@ -1,0 +1,16 @@
+{% extends 'stats/base.html' %}
+{% block title %}
+Login
+{% endblock %}
+
+{% block content %}
+
+<div class="m-3">
+    <form method = "POST" class="form-signin text-center m-3">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Login</button>
+    </form>
+</div>
+
+{% endblock %}

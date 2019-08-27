@@ -29,8 +29,18 @@
     <body>
 
         <!-- The banner at the top of the page -->
-        <div class="banner">
-            <h1 class="vertical-center">Banner Text</h1>
+        <div class="banner row">
+            <h1 class="vertical-center col-10">Banner Text</h1>
+            <div class="col-18">
+                {% if user.is_authenticated %}
+                    <p style="color: white">Hi {{ user.username }}!</p>
+                    <a style="color: white" href="{% url 'logout' %}">Logout</a>
+                {% else %}
+                    <a style="color: white" href="{% url 'login' %}">Login</a>
+                    <br>
+                    <a style="color: white"href="/accounts/signup/">Sign Up</a>
+                {% endif %}
+            </div>
         </div>
 
         {% block content %}

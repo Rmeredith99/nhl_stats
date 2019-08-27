@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django_tables2',
     'django_filters',
     'bootstrap4',
+    'accounts.apps.AccountsConfig'
 ]
 
 MIDDLEWARE = [
@@ -58,7 +59,7 @@ ROOT_URLCONF = 'nhl_stats.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -123,3 +124,5 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+LOGIN_REDIRECT_URL = "/stats/"
+LOGOUT_REDIRECT_URL = "/stats/"
