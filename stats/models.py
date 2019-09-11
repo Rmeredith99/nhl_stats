@@ -198,14 +198,14 @@ class StatLine(models.Model):
 
 class CustomMetric(models.Model):
 	string = models.CharField(max_length=200)
-	label = models.CharField(max_length=200)
+	label = models.CharField(max_length=200, default="default")
 	username = models.CharField(max_length=200, default="")
 
 	class Meta:
 		db_table = "CustomMetric"
 
 class CustomStat(models.Model):
-	player = models.ForeignKey(StatLine, on_delete=models.CASCADE)
+	player = models.ForeignKey(StatLine, related_name = "custom_stat_player", on_delete=models.CASCADE)
 	value = models.FloatField(null=True)
 	metric = models.ForeignKey(CustomMetric, on_delete=models.CASCADE)
 

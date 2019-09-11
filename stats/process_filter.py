@@ -122,6 +122,10 @@ def url_string_to_queryset(url_string):
             filter_end.append(url_string.index("=&page="))
         elif "&page=" in url_string:
             filter_end.append(url_string.index("&page="))
+        if "=&metric=" in url_string:
+            filter_end.append(url_string.index("=&metric="))
+        elif "&metric=" in url_string:
+            filter_end.append(url_string.index("&metric="))
             
         if len(filter_end) > 0:
             filter_string = url_string[filter_start:min(filter_end)]
@@ -228,15 +232,22 @@ def remove_sort(url_string):
     elif "?page=" in url_string:
         index = url_string.index("?page=")
         page_start = index
+    if "=&metric=" in url_string:
+        index = url_string.index("=&metric=")
+        metric_start = index
+    elif "&metric=" in url_string:
+        index = url_string.index("&metric=")
+        metric_start = index
+    elif "?metric=" in url_string:
+        index = url_string.index("?metric=")
+        metric_start = index
 
-    if max(sort_start, page_start) == -1:
+    start_list = [sort_start, page_start, metric_start]
+    if max(start_list) == -1:
         return url_string
-    elif sort_start == -1:
-        return url_string[:page_start]
-    elif page_start == -1:
-        return url_string[:sort_start]
-    else: # sort and page both appear
-        return url_string[:min(sort_start, page_start)]
+    else: # if at least one attribute occurs
+        non_empty_list = list(filter(lambda x : x != -1, start_list))
+        return url_string[:min(non_empty_list)]
 
 def get_page_number(url_string):
     """

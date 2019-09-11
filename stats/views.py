@@ -8,8 +8,9 @@ from django.http import HttpResponse
 from stats.data_scraper import update_data
 from stats.process_filter import filter_text_to_url, update_url, url_string_to_queryset, remove_filter
 from stats.process_filter import get_page_number, remove_sort
-from stats.process_metric import get_custom_metric
-from stats.models import StatLine
+from stats.process_metric import get_custom_metric, add_metric, assign_values
+
+from stats.models import StatLine, CustomMetric
 from stats.tables import StatLineTable
 from stats.filters import StatLineFilter
 from stats.forms import FilterForm, MetricForm
@@ -21,27 +22,22 @@ def home(request):
     The first page of the stats app. Not actually called 'home'
         in the url
     """
-    # # If there is a filter submission
-    # if request.method == 'POST':
-    #     filter_form = FilterForm(request.POST)
-    #     if filter_form.is_valid():
-    #         # get the filter criteria and the current url
-    #         filter_string = filter_form.cleaned_data['filter_string']
-    #         current_url = filter_form.cleaned_data['current_url']
-
-    #         # convert the filter criteria into url 
-    #         # form and then update current url
-    #         filter_url = filter_text_to_url(filter_string)
-    #         new_url = update_url("/stats/", current_url, filter_url)
-    #         return redirect(new_url)
-    #     else:
-    #         filter_form = FilterForm()
-    # else:
-    #     filter_form = FilterForm()
-
-    # update_data("20182019", False)
     objects, filter_box = url_string_to_queryset(request.get_full_path())
+    # Insertion of custom metric:
+    # - retrieve metric number
+    # - apply metric to objects to create CustomStat objects
+    metric_id = -1
+    if 'metric' in request.GET:
+        try:
+            metric_id = int(request.GET['metric'])
+            metric = CustomMetric.objects.get(pk=metric_id)
+            assign_values(metric, objects)
+        except:
+            metric_id = -1
+        
+
     table = StatLineTable(objects)
+    table.metric_id = metric_id
     page_number = get_page_number(request.get_full_path())
     table.page_number = page_number
     RequestConfig(request).configure(table)
@@ -73,12 +69,11 @@ def metric_submit(request):
             username = request.user.username
 
             # metric value stuff
-            # TODO:
-            # Iterate through CustomStat objects and assign values
-            # Change the url with the new id of the CustomMetric
-            metric = get_custom_metric(username, label, metric_string)
+            metric = get_custom_metric(username, "default", metric_string)
+            metric_id = metric.id
+            new_url = add_metric(current_url, metric_id)
 
-            return redirect(current_url)
+            return redirect(new_url)
         else:
             metric_form = MetricForm()
             return redirect(request.POST['current_url'])
