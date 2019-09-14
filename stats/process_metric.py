@@ -13,7 +13,7 @@ def statline_to_value(statline_object, total_objects, custom_string):
     """
     # TODO: write code to process custom_string and output a related
     # value instead of a hard-coded one
-    return total_objects.aggregate(Avg('goals'))['goals__avg']
+    return total_objects.aggregate(Avg('goals'))['goals__avg'] + getattr(statline_object, "goals")
 
 def get_custom_metric(username, label, metric_string):
     """
