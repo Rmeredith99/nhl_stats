@@ -27,15 +27,16 @@ def home(request):
     # - retrieve metric number
     # - apply metric to objects to create CustomStat objects
     metric_id = -1
+    metric_string = ""
     if 'metric' in request.GET:
-        try:
+        if True:
             metric_id = int(request.GET['metric'])
             metric = CustomMetric.objects.get(pk=metric_id)
             assign_values(metric, objects)
-        except:
+            metric_string = metric.string
+        else:
             metric_id = -1
         
-
     table = StatLineTable(objects)
     table.metric_id = metric_id
     page_number = get_page_number(request.get_full_path())
@@ -43,7 +44,12 @@ def home(request):
     RequestConfig(request).configure(table)
     table.paginate(page=request.GET.get('page', 1), per_page=15)
 
-    return render(request, 'stats/home.html', {"stat_lines": objects, "table": table, "filter_box": filter_box})
+    return render(request, 'stats/home.html', {
+        "stat_lines": objects, 
+        "table": table, 
+        "filter_box": filter_box, 
+        "metric_box": metric_string
+        })
 
 def metric_submit(request):
     """
@@ -65,7 +71,6 @@ def metric_submit(request):
             # get the filter criteria and the current url
             metric_string = metric_form.cleaned_data['metric_string']
             current_url = metric_form.cleaned_data['current_url']
-            label = metric_form.cleaned_data['label']
             username = request.user.username
 
             # metric value stuff
@@ -82,12 +87,13 @@ def metric_submit(request):
         return redirect("/stats/")
 
 
-def filter_submit(request):
+def filter_submit(request, s=""):
     """
     [filter_submit] is run after entering a filter into the textbox.
         This is only an intermediate step and will eventually redirect
         back to the home page.
     """
+    print(request.GET)
     # If there is a filter submission
     if request.method == 'POST':
         filter_form = FilterForm(request.POST)

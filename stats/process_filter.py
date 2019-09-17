@@ -83,9 +83,9 @@ def filter_text_to_url(filter_text):
             relation_string = relation_map[relation]
 
             # add all the pieces together to create a new filter
-            url.append(name + space + relation_string + space + value + "&")
+            url.append(name + space + relation_string + space + value + "%7E")
 
-    return "".join(url).strip("&")
+    return "".join(url).strip("%7E")
 
 def filter_details_to_string(name, relation, value):
     """
@@ -135,7 +135,7 @@ def url_string_to_queryset(url_string):
         return StatLine.objects.all(), ""
 
     # separating various filters and iterating over them
-    filters = filter_string.split("&")
+    filters = filter_string.split("%7E")
     objects = StatLine.objects.all()
     relation_map = {"lte": "lte", "gte": "gte", "lt": "lt", "gt": "gt", "eq": "exact"}
     filter_box = ""

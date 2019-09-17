@@ -1,19 +1,9 @@
 from stats.models import StatLine, CustomStat, CustomMetric
+from stats.interpreter import interpreter
 from django.db.models import Avg
 from django.db import transaction
 from time import time
 
-
-def statline_to_value(statline_object, total_objects, custom_string):
-    """
-    [statline_to_value] is called from views when a metric is submitted.
-    [statline_object]: instance of StatLine
-    [custom_string]: string
-    Returns: float
-    """
-    # TODO: write code to process custom_string and output a related
-    # value instead of a hard-coded one
-    return total_objects.aggregate(Avg('goals'))['goals__avg'] + getattr(statline_object, "goals")
 
 def get_custom_metric(username, label, metric_string):
     """
@@ -34,8 +24,9 @@ def get_custom_metric(username, label, metric_string):
 
     if len(metric_queryset) > 0:
         metric = metric_queryset.get(username = username)
-        for stat in metric.customstat_set.all():
-            stat.delete()
+        metric.customstat_set.all().delete()
+        # for stat in metric.customstat_set.all():
+        #     stat.delete()
         metric.delete()
 
     # If there is no current metric with the given values
@@ -53,28 +44,22 @@ def assign_values(metric, objects):
     [objects]: StatLine queryset
     Returns: None
     """
-    time_a = time()
     delete_metric_stats(metric)
     metric_string = metric.string
+
+    # statline_to_value is a function that optimizes for repeated
+    # calculation of aggregate functions
+    # Takes in a statline and returns a float or error
+    statline_to_value = interpreter(metric_string, objects)
 
     stats = [
         CustomStat(
             player = statline, 
-            value = statline_to_value(statline, objects, metric_string), 
+            value = statline_to_value(statline), 
             metric = metric
             ) for statline in objects
         ]
     CustomStat.objects.bulk_create(stats)
-    time_b = time()
-    print(time_b - time_a)
-
-    # for statline in objects:
-    #     value = statline_to_value(statline, objects, metric_string)
-    #     stat = CustomStat(player = statline, value = value, metric = metric)
-    #     stat.save()
-    # time_b = time()
-    # print(time_b - time_a)
-
 
 def add_metric(url, metric_id):
     """

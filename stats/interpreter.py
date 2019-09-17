@@ -1,9 +1,11 @@
-#from models import StatLine, CustomStat, CustomMetric
+from stats.models import StatLine, CustomStat, CustomMetric
+from django.db.models import Avg, Min, Max, F, Sum
+from numpy import std
 
 # useful pre_defined values
 lower_to_correct_map = {'year': 'year', 'playoffs': 'playoffs', 'assist1st': 'assist1st', 'assist2nd': 'assist2nd', 'assists': 'assists', 'assistsper60minutes': 'assistsPer60Minutes', 'assistspergame': 'assistsPerGame', 'avgshotlength': 'avgShotLength', 'blockedshots': 'blockedShots', 'blockedshotspergame': 'blockedShotsPerGame', 'defensivezonefaceoffs': 'defensiveZoneFaceoffs', 'engoals': 'enGoals', 'evassists': 'evAssists', 'evfaceoffwinpctg': 'evFaceoffWinPctg', 'evfaceoffslost': 'evFaceoffsLost', 'evfaceoffswon': 'evFaceoffsWon', 'evgoals': 'evGoals', 'evpoints': 'evPoints', 'evtimeonice': 'evTimeOnIce', 'evtimeonicepergame': 'evTimeOnIcePerGame', 'faceoffloss': 'faceoffLoss', 'faceofflossdefensivezone': 'faceoffLossDefensiveZone', 'faceofflossneutralzone': 'faceoffLossNeutralZone', 'faceofflossoffensivezone': 'faceoffLossOffensiveZone', 'faceofflosswhenahead': 'faceoffLossWhenAhead', 'faceofflosswhenbehind': 'faceoffLossWhenBehind', 'faceofflosswhenclose': 'faceoffLossWhenClose', 'faceoffwinpctg': 'faceoffWinPctg', 'faceoffwinpctgdefensivezone': 'faceoffWinPctgDefensiveZone', 'faceoffwinpctgneutralzone': 'faceoffWinPctgNeutralZone', 'faceoffwinpctgoffensivezone': 'faceoffWinPctgOffensiveZone', 'faceoffwins': 'faceoffWins', 'faceoffwinsdefensivezone': 'faceoffWinsDefensiveZone', 'faceoffwinsneutralzone': 'faceoffWinsNeutralZone', 'faceoffwinsoffensivezone': 'faceoffWinsOffensiveZone', 'faceoffwinswhenahead': 'faceoffWinsWhenAhead', 'faceoffwinswhenbehind': 'faceoffWinsWhenBehind', 'faceoffwinswhenclose': 'faceoffWinsWhenClose', 'faceoffs': 'faceoffs', 'faceoffslost': 'faceoffsLost', 'faceoffstaken': 'faceoffsTaken', 'faceoffswon': 'faceoffsWon', 'firstgoals': 'firstGoals', 'fiveonfiveshootingpctg': 'fiveOnFiveShootingPctg', 'gamewinninggoals': 'gameWinningGoals', 'gamesplayed': 'gamesPlayed', 'giveaways': 'giveaways', 'goals': 'goals', 'goalsbackhand': 'goalsBackhand', 'goalsdeflected': 'goalsDeflected', 'goalsper60minutes': 'goalsPer60Minutes', 'goalspergame': 'goalsPerGame', 'goalsslap': 'goalsSlap', 'goalssnap': 'goalsSnap', 'goalstipped': 'goalsTipped', 'goalswraparound': 'goalsWraparound', 'goalswrist': 'goalsWrist', 'hits': 'hits', 'hitspergame': 'hitsPerGame', 'homeplusminus': 'homePlusMinus', 'missedshots': 'missedShots', 'missedshotshitcrossbar': 'missedShotsHitCrossbar', 'missedshotshitpost': 'missedShotsHitPost', 'missedshotsovernet': 'missedShotsOverNet', 'missedshotspergame': 'missedShotsPerGame', 'missedshotswideofnet': 'missedShotsWideOfNet', 'offensivezonefaceoffs': 'offensiveZoneFaceoffs', 'otgoals': 'otGoals', 'penalties': 'penalties', 'penaltiesdrawn': 'penaltiesDrawn', 'penaltiesdrawnper60minutes': 'penaltiesDrawnPer60Minutes', 'penaltiesgamemisconduct': 'penaltiesGameMisconduct', 'penaltiesmajor': 'penaltiesMajor', 'penaltiesmatch': 'penaltiesMatch', 'penaltiesminor': 'penaltiesMinor', 'penaltiesmisconduct': 'penaltiesMisconduct', 'penaltiesper60minutes': 'penaltiesPer60Minutes', 'penaltyminutes': 'penaltyMinutes', 'penaltyminutespergame': 'penaltyMinutesPerGame', 'penaltyshotattempts': 'penaltyShotAttempts', 'penaltyshotgoals': 'penaltyShotGoals', 'playerbirthcity': 'playerBirthCity', 'playerbirthcountry': 'playerBirthCountry', 'playerbirthdate': 'playerBirthDate', 'playerbirthstateprovince': 'playerBirthStateProvince', 'playerdraftoverallpickno': 'playerDraftOverallPickNo', 'playerdraftroundno': 'playerDraftRoundNo', 'playerdraftyear': 'playerDraftYear', 'playerfirstname': 'playerFirstName', 'playerheight': 'playerHeight', 'playerid': 'playerId', 'playerinhockeyhof': 'playerInHockeyHof', 'playerisactive': 'playerIsActive', 'playerlastname': 'playerLastName', 'playername': 'playerName', 'playernationality': 'playerNationality', 'playerpositioncode': 'playerPositionCode', 'playershootscatches': 'playerShootsCatches', 'playerteamsplayedfor': 'playerTeamsPlayedFor', 'playerweight': 'playerWeight', 'plusminus': 'plusMinus', 'points': 'points', 'pointsper60minutes': 'pointsPer60Minutes', 'pointspergame': 'pointsPerGame', 'ppassists': 'ppAssists', 'ppfaceoffwinpctg': 'ppFaceoffWinPctg', 'ppfaceoffslost': 'ppFaceoffsLost', 'ppfaceoffswon': 'ppFaceoffsWon', 'ppgiveaways': 'ppGiveaways', 'ppgoals': 'ppGoals', 'pphits': 'ppHits', 'ppmissedshots': 'ppMissedShots', 'pppoints': 'ppPoints', 'ppshots': 'ppShots', 'pptakeaways': 'ppTakeaways', 'ppteamgoalsagainst': 'ppTeamGoalsAgainst', 'ppteamgoalsfor': 'ppTeamGoalsFor', 'pptimeonice': 'ppTimeOnIce', 'pptimeonicepergame': 'ppTimeOnIcePerGame', 'roadplusminus': 'roadPlusMinus', 'seasonid': 'seasonId', 'shassists': 'shAssists', 'shblockedshots': 'shBlockedShots', 'shfaceoffwinpctg': 'shFaceoffWinPctg', 'shfaceoffslost': 'shFaceoffsLost', 'shfaceoffswon': 'shFaceoffsWon', 'shgiveaways': 'shGiveaways', 'shgoals': 'shGoals', 'shhits': 'shHits', 'shmissedshots': 'shMissedShots', 'shpoints': 'shPoints', 'shshots': 'shShots', 'shtakeaways': 'shTakeaways', 'shtimeonice': 'shTimeOnIce', 'shtimeonicepergame': 'shTimeOnIcePerGame', 'shifts': 'shifts', 'shiftspergame': 'shiftsPerGame', 'shootingpctg': 'shootingPctg', 'shootingplussavepctg': 'shootingPlusSavePctg', 'shotattempts': 'shotAttempts', 'shotattemptsagainst': 'shotAttemptsAgainst', 'shotattemptsahead': 'shotAttemptsAhead', 'shotattemptsbehind': 'shotAttemptsBehind', 'shotattemptsclose': 'shotAttemptsClose', 'shotattemptsfor': 'shotAttemptsFor', 'shotattemptspctg': 'shotAttemptsPctg', 'shotattemptspctgahead': 'shotAttemptsPctgAhead', 'shotattemptspctgbehind': 'shotAttemptsPctgBehind', 'shotattemptspctgclose': 'shotAttemptsPctgClose', 'shotattemptspctgtied': 'shotAttemptsPctgTied', 'shotattemptsrelpctg': 'shotAttemptsRelPctg', 'shotattemptstied': 'shotAttemptsTied', 'shots': 'shots', 'shotsbackhand': 'shotsBackhand', 'shotsdeflected': 'shotsDeflected', 'shotspergame': 'shotsPerGame', 'shotsslap': 'shotsSlap', 'shotssnap': 'shotsSnap', 'shotstipped': 'shotsTipped', 'shotswraparound': 'shotsWraparound', 'shotswrist': 'shotsWrist', 'takeaways': 'takeaways', 'teamgoalsagainst': 'teamGoalsAgainst', 'teamgoalsfor': 'teamGoalsFor', 'timeonice': 'timeOnIce', 'timeonicepergame': 'timeOnIcePerGame', 'timeonicepershift': 'timeOnIcePerShift', 'unblockedshotattempts': 'unblockedShotAttempts', 'unblockedshotattemptsagainst': 'unblockedShotAttemptsAgainst', 'unblockedshotattemptsahead': 'unblockedShotAttemptsAhead', 'unblockedshotattemptsbehind': 'unblockedShotAttemptsBehind', 'unblockedshotattemptsclose': 'unblockedShotAttemptsClose', 'unblockedshotattemptsfor': 'unblockedShotAttemptsFor', 'unblockedshotattemptspctg': 'unblockedShotAttemptsPctg', 'unblockedshotattemptspctgahead': 'unblockedShotAttemptsPctgAhead', 'unblockedshotattemptspctgbehind': 'unblockedShotAttemptsPctgBehind', 'unblockedshotattemptspctgclose': 'unblockedShotAttemptsPctgClose', 'unblockedshotattemptspctgtied': 'unblockedShotAttemptsPctgTied', 'unblockedshotattemptsrelpctg': 'unblockedShotAttemptsRelPctg', 'unblockedshotattemptstied': 'unblockedShotAttemptsTied', 'zonestartpctg': 'zoneStartPctg'}
 single_tokens = set(["=", "+", "-", "*", "/", "^", "(", ")"])
-aggregate_tokens = set(["max", "min", "avg", "std"])
+aggregate_tokens = set(["max", "min", "avg", "std", "sum"])
 non_pre_subtraction_ops = set(["+", "*", "/", "^", "=", "~"])
 
 def lexer(string):
@@ -62,7 +64,7 @@ class AST:
         self.children = []
 
     def __repr__(self, level=0):
-        ret = "\t" * level + repr(self.value) + "\n"
+        ret = "\t" * level + self.type + " " + str(self.value) + "\n"
         for child in self.children:
             ret += child.__repr__(level + 1)
         return ret
@@ -301,8 +303,14 @@ def check_float(n1, n2=0):
     except:
         return False
 
+def stddev(queryset, label):
+    values = []
+    for statline in queryset:
+        values.append(getattr(statline, label))
 
-def evaluator(ast, env):
+    return std(values)
+
+def evaluator(ast, env, statline, total_objects):
     """
     [evaluator] takes in an abstract syntax tree, [ast], and an
         environment, [env], which is a dictionary from variable name 
@@ -321,8 +329,8 @@ def evaluator(ast, env):
         return "ERROR"
 
     elif ast_type == "ADD":
-        left = evaluator(ast.children[0], env)
-        right = evaluator(ast.children[1], env)
+        left = evaluator(ast.children[0], env, statline, total_objects)
+        right = evaluator(ast.children[1], env, statline, total_objects)
         if left == "ERROR" or right == "ERROR":
             return "ERROR"
         if not check_float(left, right):
@@ -332,8 +340,8 @@ def evaluator(ast, env):
             return float(left) + float(right)
 
     elif ast_type == "SUB":
-        left = evaluator(ast.children[0], env)
-        right = evaluator(ast.children[1], env)
+        left = evaluator(ast.children[0], env, statline, total_objects)
+        right = evaluator(ast.children[1], env, statline, total_objects)
         if left == "ERROR" or right == "ERROR":
             return "ERROR"
         if not check_float(left, right):
@@ -343,8 +351,8 @@ def evaluator(ast, env):
             return float(left) - float(right)
 
     elif ast_type == "MULT":
-        left = evaluator(ast.children[0], env)
-        right = evaluator(ast.children[1], env)
+        left = evaluator(ast.children[0], env, statline, total_objects)
+        right = evaluator(ast.children[1], env, statline, total_objects)
         if left == "ERROR" or right == "ERROR":
             return "ERROR"
         if not check_float(left, right):
@@ -354,8 +362,8 @@ def evaluator(ast, env):
             return float(left) * float(right)
 
     elif ast_type == "DIV":
-        left = evaluator(ast.children[0], env)
-        right = evaluator(ast.children[1], env)
+        left = evaluator(ast.children[0], env, statline, total_objects)
+        right = evaluator(ast.children[1], env, statline, total_objects)
         if left == "ERROR" or right == "ERROR":
             return "ERROR"
         if not check_float(left, right):
@@ -368,8 +376,8 @@ def evaluator(ast, env):
             return float(left) / float(right)
 
     elif ast_type == "EXP":
-        left = evaluator(ast.children[0], env)
-        right = evaluator(ast.children[1], env)
+        left = evaluator(ast.children[0], env, statline, total_objects)
+        right = evaluator(ast.children[1], env, statline, total_objects)
         if left == "ERROR" or right == "ERROR":
             return "ERROR"
         if not check_float(left, right):
@@ -385,7 +393,7 @@ def evaluator(ast, env):
             return (float(left) ** float(right)).real
 
     elif ast_type == "NEGATE":
-        right = evaluator(ast.children[0], env)
+        right = evaluator(ast.children[0], env, statline, total_objects)
         if right == "ERROR":
             return "ERROR"
         if not check_float(right):
@@ -395,23 +403,18 @@ def evaluator(ast, env):
             return -1 * float(right)
 
     elif ast_type == "ASSIGN":
-        left = evaluator(ast.children[0], env)
-        right = evaluator(ast.children[1], env)
+        left = evaluator(ast.children[0], env, statline, total_objects)
+        right = evaluator(ast.children[1], env, statline, total_objects)
         if left == "ERROR" or right == "ERROR":
             return "ERROR"
         if not check_float(right):
             env["ERROR"] = "Cannot assign a non-number"
             return "ERROR"
         else:
-            # assign doesn't truly return anything, however to prevent
-            # multiple assignments in the same line, it will return a
-            # an error informing that assignment is a null operation
-            # env[str(left)] = float(right)
-            # env["ERROR"] = "Variable assignment does not evaluate to a number"
-            # return "ERROR"
+            # assign doesn't truly return anything, but since
+            # we're working with floats, we will use 0 for null
             env[str(left)] = float(right)
             return 0
-
 
     elif ast_type == "FLOAT":
         return float(ast.value)
@@ -426,28 +429,129 @@ def evaluator(ast, env):
     elif ast_type == "ASSIGN_VAR":
         return ast.value
 
-def interpreter(ast_list):
+    elif ast_type == "MAX":
+        right_ast = ast.children[0]
+        if right_ast.type != "STAT":
+            env["ERROR"] = "Aggregate functions can only accept a statistic category"
+            return "ERROR"
+        else:
+            stat_value = right_ast.value
+            category = stat_value + "__max"
+            if category not in env:
+                aggregate_value = total_objects.aggregate(Max(stat_value))[category]
+                # memoize the output of the aggregate function
+                env[category] = aggregate_value
+            else:
+                aggregate_value = env[category]
+            return aggregate_value
 
+    elif ast_type == "MIN":
+        right_ast = ast.children[0]
+        if right_ast.type != "STAT":
+            env["ERROR"] = "Aggregate functions can only accept a statistic category"
+            return "ERROR"
+        else:
+            stat_value = right_ast.value
+            category = stat_value + "__min"
+            if category not in env:
+                aggregate_value = total_objects.aggregate(Min(stat_value))[category]
+                # memoize the output of the aggregate function
+                env[category] = aggregate_value
+            else:
+                aggregate_value = env[category]
+            return aggregate_value
+
+    elif ast_type == "AVG":
+        right_ast = ast.children[0]
+        if right_ast.type != "STAT":
+            env["ERROR"] = "Aggregate functions can only accept a statistic category"
+            return "ERROR"
+        else:
+            stat_value = right_ast.value
+            category = stat_value + "__avg"
+            if category not in env:
+                aggregate_value = total_objects.aggregate(Avg(stat_value))[category]
+                # memoize the output of the aggregate function
+                env[category] = aggregate_value
+            else:
+                aggregate_value = env[category]
+            return aggregate_value
+
+    elif ast_type == "STD":
+        right_ast = ast.children[0]
+        if right_ast.type != "STAT":
+            env["ERROR"] = "Aggregate functions can only accept a statistic category"
+            return "ERROR"
+        else:
+            stat_value = right_ast.value
+            category = stat_value + "__stddev"
+            if category not in env:
+                aggregate_value = stddev(total_objects, stat_value)
+                # memoize the output of the aggregate function
+                env[category] = aggregate_value
+            else:
+                aggregate_value = env[category]
+            return aggregate_value
+
+    elif ast_type == "SUM":
+        right_ast = ast.children[0]
+        if right_ast.type != "STAT":
+            env["ERROR"] = "Aggregate functions can only accept a statistic category"
+            return "ERROR"
+        else:
+            stat_value = right_ast.value
+            category = stat_value + "__sum"
+            if category not in env:
+                aggregate_value = total_objects.aggregate(Sum(stat_value))[category]
+                # memoize the output of the aggregate function
+                env[category] = aggregate_value
+            else:
+                aggregate_value = env[category]
+            return aggregate_value
+
+    elif ast_type == "STAT":
+        # Stats have already been checked by the parser to be an
+        # attribute of statline, so we can simply retrieve the value
+        return getattr(statline, ast.value)
+
+def interpreter(custom_string, total_objects):
+
+    # Converts the input string into an abstract syntax tree
+    token_matrix = lexer(custom_string)
+    ast_list = parser(token_matrix)
+
+    # If the input is empty, return zero
     if len(ast_list) == 0:
         return 0
 
     env = {}
-    values = []
-    for i, ast in enumerate(ast_list):
-        value = evaluator(ast, env)
-        if value == "ERROR":
-            return "Error (line " + str(i + 1) + "): " + env["ERROR"]
-        values.append(value)
+    def statline_to_float(statline):
+        """
+        [statline_to_float] encapsulates just the interpretation of the 
+            ast dealing with statline. It has an environment, env, already
+            whithin the closure that will act as memoization for the aggregate
+            functions.
+        [statline]: statline object
+        Returns: float or an error
+        """
+        values = []
+        for i, ast in enumerate(ast_list):
+            value = evaluator(ast, env, statline, total_objects)
+            if value == "ERROR":
+                return "Error (line " + str(i + 1) + "): " + env["ERROR"]
+            values.append(value)
 
-    return values[-1]
+        return values[-1]
+
+    return statline_to_float
 
 
-input_string = "n = -2 * 4^1.5 \r\n k = 5/n \r\n k + 0.2"
-token_array = lexer(input_string)
-ast_list = parser(token_array)
-env = {}
-evaluation = interpreter(ast_list)
-print(evaluation)
+# input_string = "n = -2 * 4^1.5 \r\n k = 5/n \r\n k + 0.2"
+# token_array = lexer(input_string)
+# ast_list = parser(token_array)
+# env = {}
+# evaluation = interpreter(ast_list)
+# print(evaluation)
 
 
 
