@@ -32,6 +32,10 @@ def lexer(string):
                 line_tokens.append(line[i])
                 token_start = i + 1
             elif line[token_start:i + 1] in aggregate_tokens:
+                # if the lexer would normally extract 'avg' as an aggregate function
+                # but it's actually avgShotLength
+                if len(line) > i + 1 and line.find("avgshotlength", token_start) == token_start:
+                    continue
                 line_tokens.append(line[token_start:i + 1])
                 token_start = i + 1
         
@@ -544,14 +548,4 @@ def interpreter(custom_string, total_objects):
         return values[-1]
 
     return statline_to_float
-
-
-# input_string = "n = -2 * 4^1.5 \r\n k = 5/n \r\n k + 0.2"
-# token_array = lexer(input_string)
-# ast_list = parser(token_array)
-# env = {}
-# evaluation = interpreter(ast_list)
-# print(evaluation)
-
-
 

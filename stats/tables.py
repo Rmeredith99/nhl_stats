@@ -3,11 +3,6 @@ from stats.models import StatLine, CustomMetric, CustomStat
 from django.db.models import F, Max
 import itertools
 
-template = '''
-{% for item in record.customstat_set.all %}
-    {{ item.value }}
-{% endfor %}
-'''
 
 class StatLineTable(tables.Table):
     # Adding custom columns to the table

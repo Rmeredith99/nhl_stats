@@ -23,12 +23,12 @@ NHL Stats
     </form>
 
     <div class="row">
-        <form name='remove_filter' action="remove_filter/" method='POST' class="form-group">
+        <form name='remove_filter' action="remove_filter{{request.get_full_path}}" method='POST' class="form-group">
             {% csrf_token %}
             <button type="submit" class="btn btn-primary col-10 m-3" name="current_url" value="{{request.get_full_path}}">Reset Filter</button>
         </form>
 
-        <form name='remove_sort' action="remove_sort/" method='POST' class="form-group">
+        <form name='remove_sort' action="remove_sort{{request.get_full_path}}" method='POST' class="form-group">
             {% csrf_token %}
             <button type="submit" class="btn btn-primary col-10 m-3" name="current_url" value="{{request.get_full_path}}">Reset Sort</button>
         </form>
@@ -40,7 +40,7 @@ NHL Stats
 
     {% render_table table %}
 
-    <form name="submit" action="metric_submit/" method="POST">
+    <form name="submit" action="metric_submit{{request.get_full_path}}" method="POST">
         {% csrf_token %}
 
         <div class="form-group">
@@ -52,6 +52,10 @@ NHL Stats
             <button type="submit" class="btn btn-primary" name="current_url" value="{{request.get_full_path}}">Create Metric</button>
         </div>
     </form>
+
+    <div>
+        <p style="color: red">{{metric_message}}</p>
+    </div>
 
 </div>
 

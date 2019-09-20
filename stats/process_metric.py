@@ -1,8 +1,6 @@
 from stats.models import StatLine, CustomStat, CustomMetric
 from stats.interpreter import interpreter
-from django.db.models import Avg
 from django.db import transaction
-from time import time
 
 
 def get_custom_metric(username, label, metric_string):
@@ -25,8 +23,6 @@ def get_custom_metric(username, label, metric_string):
     if len(metric_queryset) > 0:
         metric = metric_queryset.get(username = username)
         metric.customstat_set.all().delete()
-        # for stat in metric.customstat_set.all():
-        #     stat.delete()
         metric.delete()
 
     # If there is no current metric with the given values
@@ -59,19 +55,14 @@ def assign_values(metric, objects):
             metric = metric
             ) for statline in objects
         ]
-    CustomStat.objects.bulk_create(stats)
 
-def add_metric(url, metric_id):
-    """
-    [add_metric] takes in a url and an id indicating the metric and 
-        returns a new url with the id within it.
-    [url]: string
-    [metric_id]: int
-    """
-    if "?" in url:
-        return url + "&metric=" + str(metric_id)
+    # If there was an error, return it
+    # otherwise, create the stats and return the empty string
+    if len(stats) > 0 and type(stats[0].value) == type(""):
+            return stats[0].value
     else:
-        return url + "?metric=" + str(metric_id)
+        CustomStat.objects.bulk_create(stats)
+        return ""
 
 def delete_metric_stats(metric):
     """
@@ -79,6 +70,7 @@ def delete_metric_stats(metric):
         with the given metric. This is to be called right before assigning 
         new objects to the metric so that all old objects are cleared.
     [metric]: CustomMetric object
+    Returns: None
     """
     for stat in metric.customstat_set.all():
         stat.delete()
