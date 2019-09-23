@@ -39,7 +39,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'stats',
     'django_tables2',
-    'django_filters',
     'bootstrap4',
     'accounts.apps.AccountsConfig'
 ]

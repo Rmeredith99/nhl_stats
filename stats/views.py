@@ -12,7 +12,6 @@ from stats.process_metric import get_custom_metric, assign_values
 
 from stats.models import StatLine, CustomMetric
 from stats.tables import StatLineTable
-from stats.filters import StatLineFilter
 from stats.forms import FilterForm, MetricForm
 
 # Create your views here.
