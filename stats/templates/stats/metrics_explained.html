@@ -1,0 +1,122 @@
+{% extends 'stats/base.html' %}
+
+{% block title %}
+About: Metrics
+{% endblock %}
+
+{% block content %}
+
+<div class="m-3">
+        <h5>What is a metric?</h5>
+        <div style="border: 1px solid; border-color: rgb(200,200,200); border-radius: 5px">
+            <div class="m-3">
+                <p>
+                    Metrics are a way of measuring players based on values that aren't in the table. 
+                    With metrics you can create custom stats which gives an alternate way to rank and analyze players.
+                </p>
+            </div>
+        </div>
+    
+        <br>
+    
+        <h5>How do you write a Metric?</h5>
+        <div style="border: 1px solid; border-color: rgb(200,200,200); border-radius: 5px">
+            <div class="m-3">
+                <p>
+                    Metrics are written using a mostly math-based language which you can write directly into the metric box. 
+                    The language is quick and intuitive while remaining quite capable.
+                </p>
+
+                <p>
+                    To use a statistic category in your metric, simply use the name of the stat as if it were a variable name.
+                    Capitalization and spacing are not important when writing a metric; "gamesPlayed", "Games Played", and "Ga MeSpL aYeD" are all equivalent.
+                    The language is capable of math operations such as addition, subtraction, multiplication, division, and 
+                    exponentiation as well as aggregate functions like average, sum, min, max, and standard deviation which act 
+                    on the entire set of players in the filtered group. In order to keep metrics clean and readable, you can 
+                    assign values to variables for later user.
+                </p>
+
+                <p>
+                    There is a standard structure for a metric; the first lines contain variable assignments while the final line
+                    contains the value to be returned. There is no explicit return command. Instead, the value from the final
+                    line is always the one that is returned.
+                </p>
+            </div>
+        </div>
+    
+        <br>
+    
+        <h5>Examples</h5>
+        <ul class="list-group m-3">
+            <div class="row">
+                <li class="list-group-item col-md-3">goals</li>
+                <li class="list-group-item col-md-9">Returns the player's goals</li>
+            </div>
+    
+            <div class="row">
+                <li class="list-group-item col-md-3">playerHeight + 6</li>
+                <li class="list-group-item col-md-9">Returns the player's height plus 6</li>
+            </div>
+
+            <div class="row">
+                <li class="list-group-item col-md-3">missedShotsOverNet - 10</li>
+                <li class="list-group-item col-md-9">Returns the player's total missed shots over the net minus 10</li>
+            </div>
+
+            <div class="row">
+                <li class="list-group-item col-md-3">assists * 2</li>
+                <li class="list-group-item col-md-9">Returns twice the number of assists</li>
+            </div>
+    
+            <div class="row">
+                <li class="list-group-item col-md-3">goalsPer60Minutes / 60</li>
+                <li class="list-group-item col-md-9">Returns goalsPer60Minutes divided by 60</li>
+            </div>
+    
+            <div class="row">
+                <li class="list-group-item col-md-3">plusMinus ^ 2</li>
+                <li class="list-group-item col-md-9">Returns the square of the player's plus-minus</li>
+            </div>
+
+            <div class="row">
+                <li class="list-group-item col-md-3">avg(points)</li>
+                <li class="list-group-item col-md-9">Returns the average points over all players in the filter set</li>
+            </div>
+
+            <div class="row">
+                <li class="list-group-item col-md-3">sum(points)</li>
+                <li class="list-group-item col-md-9">Returns the total points summed over all players in the filter set</li>
+            </div>
+
+            <div class="row">
+                <li class="list-group-item col-md-3">min(points)</li>
+                <li class="list-group-item col-md-9">Returns the smallest value of points for all players in the filter set</li>
+            </div>
+
+            <div class="row">
+                <li class="list-group-item col-md-3">max(points)</li>
+                <li class="list-group-item col-md-9">Returns the largest value of points for all players in the filter set</li>
+            </div>
+
+            <div class="row">
+                <li class="list-group-item col-md-3">std(points)</li>
+                <li class="list-group-item col-md-9">Returns the standard deviation of points for all players in the filter set</li>
+            </div>
+
+            <div class="row">
+                <li class="list-group-item col-md-3">n = goals - 10<br>(assists + 5.4) * n</li>
+                <li class="list-group-item col-md-9">
+                    Assigns the player's goals minus 10 to the variable n then returns that value times the quantity assists 
+                    plus 5.4 <br>Note that the final line is the only value that is returned
+                </li>
+            </div>
+
+        </ul>
+    
+        <br>
+    
+        <a href="/stats/" class="btn btn-primary">Back</a>
+    
+    </div>
+
+{% endblock %}

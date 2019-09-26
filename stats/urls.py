@@ -5,7 +5,7 @@ from . import views
 
 urlpatterns = [
     path('', views.home, name = 'home'),
-    
+
     path('remove_filter/', views.remove_filter_submit, name = 'remove_filter_empty'),
     path('remove_filter/<str:s>/', views.remove_filter_submit, name = 'remove_filter'),
 
@@ -16,5 +16,8 @@ urlpatterns = [
     path('filter_submit/stats/<str:s>/', views.filter_submit, name = 'home_filter'),
 
     path('metric_submit/stats/', views.metric_submit, name = 'home_metric_empty'),
-    path('metric_submit/stats/<str:s>/', views.metric_submit, name = 'home_metric')
+    path('metric_submit/stats/<str:s>/', views.metric_submit, name = 'home_metric'),
+
+    path('filters_explained/', views.filters_explained, name = 'filters_explained'),
+    path('metrics_explained/', views.metrics_explained, name = 'metrics_explained'),
 ]

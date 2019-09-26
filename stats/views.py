@@ -53,6 +53,10 @@ def home(request):
     metric_id = -1
     metric_string = ""
     metric_message = ""
+    # Will bypass the need to be logged in to make a metric
+    # TODO: this is only a temporary fix. This requires a permanent solution
+    # if not request.user.is_authenticated:
+    #     metric_message = "You must be signed in to create a metric."
     if 'metric' in params_GET:
         try:
             metric_id = int(params_GET['metric'][0])
@@ -90,11 +94,11 @@ def metric_submit(request, s = ""):
         back to the home page.
         This only runs if the user is logged in.
     """
-    # Stopping the action if the user isn't logged in
-    if not request.user.is_authenticated:
-        # TODO: display a notification here
-        print("You need to be logged in to do that")
-        return redirect(request.POST['current_url'])
+    # Will bypass the need to be logged in to make a metric
+    # TODO: This a temporary measure. This requires a proper solution
+    # # Stopping the action if the user isn't logged in
+    # if not request.user.is_authenticated:
+    #     return redirect(request.POST['current_url'])
 
     # If there is a metric submission
     if request.method == 'POST':
@@ -103,7 +107,14 @@ def metric_submit(request, s = ""):
             # get the filter criteria and the current url
             metric_string = metric_form.cleaned_data['metric_string']
             current_url = metric_form.cleaned_data['current_url']
-            username = request.user.username
+
+            # If the user has logged in, use their username
+            # Otherwise, use 'guest'
+            # TODO: This is a temporary measure. This requires a proper solution
+            if request.user.is_authenticated:
+                username = request.user.username
+            else:
+                username = "guest"
 
             # metric value stuff
             metric = get_custom_metric(username, "default", metric_string)
@@ -193,3 +204,17 @@ def remove_sort_submit(request, s=""):
     new_url = "/stats/" + params_GET_to_url(params_GET)
 
     return redirect(new_url)
+
+def filters_explained(request):
+    """
+    [filters_explained] links to a static html page describing how to write
+        a filter.
+    """
+    return render(request, 'stats/filters_explained.html', {})
+
+def metrics_explained(request):
+    """
+    [metrics_explained] links to a static html page describing how to write
+        a metric.
+    """
+    return render(request, 'stats/metrics_explained.html', {})

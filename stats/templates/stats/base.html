@@ -17,7 +17,7 @@
 
         <link rel="stylesheet" href="../../static/style.css" type="text/css">
 
-        
+        <link rel="shortcut icon" type="image/png" href="../../static/favicon.ico"/>
 
         <title>
         {% block title %}
@@ -30,7 +30,7 @@
 
         <!-- The banner at the top of the page -->
         <div class="banner row">
-            <h1 class="vertical-center col-10"></h1>
+            <h1 class="vertical-center col-10">PuckStats</h1>
             <div class="col-18">
                 {% if user.is_authenticated %}
                     <p style="color: white">Hi {{ user.username }}!</p>

@@ -1,0 +1,61 @@
+{% extends 'stats/base.html' %}
+
+{% block title %}
+About: Filters
+{% endblock %}
+
+{% block content %}
+<div class="m-3">
+    <h5>Why use a filter?</h5>
+    <div style="border: 1px solid; border-color: rgb(200,200,200); border-radius: 5px">
+        <div class="m-3">
+            <p>Filters are useful for eliminating data that you don't want. By filtering out a subset of the data, you can easily see just what you're interested in.</p>
+        </div>
+    </div>
+
+    <br>
+
+    <h5>How do you write a filter?</h5>
+    <div style="border: 1px solid; border-color: rgb(200,200,200); border-radius: 5px">
+        <div class="m-3">
+            <p>Filters are easy to write! Simply start with the name of the statistic which you want filtered, add a comparison operator (&lt;, &lt;=, &gt;, &gt;=, =), and then add the value.</p>
+            <p>Capitalization and spacing are not important when writing a filter; "gamesPlayed", "Games Played", and "Ga MeSpL aYeD" are all equivalent.</p>
+            <p>You can also string together multiple filters. Simply start writing your next filter on a new line.</p>
+            <p>If you're unsure of the type of value to filter by, check the statistic to see what sort of data it contains before filtering.</p>
+        </div>
+    </div>
+
+    <br>
+
+    <h5>Examples</h5>
+    <ul class="list-group m-3">
+        <div class="row">
+            <li class="list-group-item col-md-3">goals > 10</li>
+            <li class="list-group-item col-md-9">Players with more than 10 goals</li>
+        </div>
+
+        <div class="row">
+            <li class="list-group-item col-md-3">gamesPlayed = 82</li>
+            <li class="list-group-item col-md-9">Players with exactly 82 games played</li>
+        </div>
+
+        <div class="row">
+            <li class="list-group-item col-md-3">blockedShots &lt;= 50</li>
+            <li class="list-group-item col-md-9">Players with no more than 50 blocked shots</li>
+        </div>
+
+        <div class="row">
+            <li class="list-group-item col-md-3">playerTeamsPlayedFor = Buf</li>
+            <li class="list-group-item col-md-9">Players who played for Buffalo, even if briefly 
+                <br>Note: playerTeamsPlayedFor is unique in that the comparison doesn't matter. It behaves the same for all operators.)
+            </li>
+        </div>
+    </ul>
+
+    <br>
+
+    <a href="/stats/" class="btn btn-primary">Back</a>
+
+</div>
+
+{% endblock %}

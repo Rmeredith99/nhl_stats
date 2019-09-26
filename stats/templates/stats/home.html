@@ -2,7 +2,7 @@
 {% load django_tables2 %}
 
 {% block title %}
-NHL Stats
+PuckStats
 {% endblock %}
 
 {% block content %}
@@ -13,7 +13,11 @@ NHL Stats
         {% csrf_token %}
 
         <div class="form-group">
-            <h5 class="">Enter filter here</h5>
+            <div class = "row">
+                <h5 class="m-3">Enter filter here</h5>
+                <a href = "filters_explained/" class = "m-3" style="color:gray">Help</a>
+            </div>
+            
             <textarea type='text' name="filter_string" placeholder="gamesPlayed >= 20&#013;&#010;year = 20182019" class="form-control" style= "height: 200px">{{filter_box}}</textarea>
         </div>
 
@@ -44,7 +48,11 @@ NHL Stats
         {% csrf_token %}
 
         <div class="form-group">
-            <h5 class="">Define metric here</h5>
+            <div class="row">
+                <h5 class="m-3">Define metric here</h5>
+                <a href="metrics_explained/" style="color:gray" class="m-3">Help</a>
+            </div>
+            
             <textarea type='text' name="metric_string" placeholder="" class="form-control" style= "height: 200px">{{metric_box}}</textarea>
         </div>
 
