@@ -17,6 +17,10 @@ from django.contrib import admin
 from django.urls import path
 from django.conf.urls import include
 
+# To help serve static files
+# from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+# import settings
+
 import stats
 import accounts
 
@@ -26,3 +30,7 @@ urlpatterns = [
     path('accounts/', include('accounts.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
 ]
+
+# To help serve static files
+# if settings.DEBUG:
+#     urlpatterns += staticfiles_urlpatterns()
