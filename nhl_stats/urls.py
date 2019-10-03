@@ -16,21 +16,21 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.conf.urls import include
+from django.shortcuts import redirect
 
-# To help serve static files
-# from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-# import settings
 
 import stats
 import accounts
 
+#temporarily redirect main home page to the stats home page
+def redirect_view(request):
+    return redirect("/stats/")
+
 urlpatterns = [
+    path('', redirect_view),
     path('admin/', admin.site.urls),
     path('stats/', include('stats.urls')),
     path('accounts/', include('accounts.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
 ]
 
-# To help serve static files
-# if settings.DEBUG:
-#     urlpatterns += staticfiles_urlpatterns()
