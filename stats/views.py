@@ -14,6 +14,8 @@ from stats.models import StatLine, CustomMetric
 from stats.tables import StatLineTable
 from stats.forms import FilterForm, MetricForm
 
+from random import randint
+
 # Create your views here.
 
 def params_GET_to_url(params):
@@ -40,6 +42,7 @@ def home(request):
         in the url. Displays the main content of the website, the 
         table of data and metric submission system.
     """
+        
     params_GET = dict(request.GET)
 
     # Defining the part of the URL that corresponds to filtering
@@ -109,12 +112,12 @@ def metric_submit(request, s = ""):
             current_url = metric_form.cleaned_data['current_url']
 
             # If the user has logged in, use their username
-            # Otherwise, use 'guest'
+            # Otherwise, use 'guest' plus a session key
             # TODO: This is a temporary measure. This requires a proper solution
             if request.user.is_authenticated:
                 username = request.user.username
             else:
-                username = "guest"
+                username = "guest" + str(request.session._get_or_create_session_key())
 
             # metric value stuff
             metric = get_custom_metric(username, "default", metric_string)
